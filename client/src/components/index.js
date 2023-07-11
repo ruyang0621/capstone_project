@@ -6,7 +6,7 @@ import BigSidebar from "./BigSidebar";
 import SmallSidebar from "./SmallSidebar";
 import Navbar from "./Navbar";
 import JobsContainer from "./JobsContainer";
-import SearchContainer from "./SearchContainer";
+import SearchJobContainer from "./SearchJobContainer";
 import FormTextArea from "./FormTextArea";
 import AddJobForm from "./AddJobForm";
 import Loading from "./Loading";
@@ -14,6 +14,10 @@ import NavLinks from "./NavLinks";
 import Job from "./Job";
 import JobInfo from "./JobInfo";
 import Note from "./Note";
+import StatsContainer from "./StatsContainer";
+import ChartsContainer from "./ChartsContainer";
+import ContactsContainer from "./ContactsContainer";
+import SearchContactContainer from "./SearchContactContainer";
 
 export {
   Logo,
@@ -24,7 +28,7 @@ export {
   Navbar,
   FormRowSelect,
   JobsContainer,
-  SearchContainer,
+  SearchJobContainer,
   FormTextArea,
   AddJobForm,
   Loading,
@@ -32,4 +36,8 @@ export {
   Job,
   JobInfo,
   Note,
+  StatsContainer,
+  ChartsContainer,
+  ContactsContainer,
+  SearchContactContainer,
 };

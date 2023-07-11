@@ -22,43 +22,50 @@ const Profile = () => {
   };
 
   return (
-    <Wrapper>
-      <form className="form" onSubmit={handleSubmit}>
-        <h3>profile</h3>
-        {showAlert && <Alert />}
+    <>
+      <h3>profile</h3>
 
-        <div className="form-center">
-          <FormRow
-            type="text"
-            name="name"
-            value={name}
-            handleChange={(e) => setName(e.target.value)}
-          />
-          <FormRow
-            type="text"
-            name="lastName"
-            labelText="last name"
-            value={lastName}
-            handleChange={(e) => setLastName(e.target.value)}
-          />
-          <FormRow
-            type="email"
-            name="email"
-            value={email}
-            handleChange={(e) => setEmail(e.target.value)}
-          />
-          <FormRow
-            type="location"
-            name="location"
-            value={location}
-            handleChange={(e) => setLocation(e.target.value)}
-          />
-          <button className="btn btn-block" type="submit" disabled={isLoading}>
-            {isLoading ? "Updating..." : "save changes"}
-          </button>
-        </div>
-      </form>
-    </Wrapper>
+      <Wrapper>
+        <form className="form" onSubmit={handleSubmit}>
+          {showAlert && <Alert />}
+
+          <div className="form-center">
+            <FormRow
+              type="text"
+              name="name"
+              value={name}
+              handleChange={(e) => setName(e.target.value)}
+            />
+            <FormRow
+              type="text"
+              name="lastName"
+              labelText="last name"
+              value={lastName}
+              handleChange={(e) => setLastName(e.target.value)}
+            />
+            <FormRow
+              type="email"
+              name="email"
+              value={email}
+              handleChange={(e) => setEmail(e.target.value)}
+            />
+            <FormRow
+              type="location"
+              name="location"
+              value={location}
+              handleChange={(e) => setLocation(e.target.value)}
+            />
+            <button
+              className="btn btn-block"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "save changes"}
+            </button>
+          </div>
+        </form>
+      </Wrapper>
+    </>
   );
 };
 export default Profile;

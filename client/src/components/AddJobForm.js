@@ -19,7 +19,7 @@ const AddJobForm = () => {
     jobTypeOptions,
     status,
     statusOptions,
-    handleChange,
+    handleJobChange,
     clearValues,
     createJob,
     editJob,
@@ -49,7 +49,7 @@ const AddJobForm = () => {
   };
 
   const handleJobInput = (e) => {
-    handleChange({ name: e.target.name, value: e.target.value });
+    handleJobChange({ name: e.target.name, value: e.target.value });
   };
 
   return (

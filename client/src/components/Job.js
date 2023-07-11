@@ -21,8 +21,10 @@ const Job = ({
   return (
     <Wrapper>
       <header className="info">
-        <h5>{position}</h5>
-        <p>{company}</p>
+        <div>
+          <h5>{position}</h5>
+          <p>{company}</p>
+        </div>
       </header>
       <div className="content">
         <JobInfo icon={<FaMapLocationDot />} text={jobLocation} />

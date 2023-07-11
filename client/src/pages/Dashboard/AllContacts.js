@@ -1,4 +1,11 @@
+import { SearchContactContainer, ContactsContainer } from "../../components";
+
 const AllContacts = () => {
-  return <h1>AllContacts</h1>;
+  return (
+    <>
+      <SearchContactContainer />
+      <ContactsContainer />
+    </>
+  );
 };
 export default AllContacts;

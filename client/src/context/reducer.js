@@ -11,7 +11,7 @@ import {
   UPDATE_USER_ERROR,
   SHOW_ADD_JOB_FORM,
   HIDE_ADD_JOB_FORM,
-  HANDLE_CHANGE,
+  HANDLE_JOB_CHANGE,
   CLEAR_VALUES,
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
@@ -24,6 +24,10 @@ import {
   EDIT_JOB_BEGIN,
   EDIT_JOB_SUCCESS,
   EDIT_JOB_ERROR,
+  CLEAR_FILTERS,
+  CHANGE_JOB_PAGE,
+  SHOW_STATS_BEGIN,
+  SHOW_STATS_SUCCESS,
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -120,8 +124,12 @@ const reducer = (state, action) => {
     return { ...state, displayAddJobForm: false };
   }
 
-  if (action.type === HANDLE_CHANGE) {
-    return { ...state, [action.payload.name]: action.payload.value };
+  if (action.type === HANDLE_JOB_CHANGE) {
+    return {
+      ...state,
+      jobPage: 1,
+      [action.payload.name]: action.payload.value,
+    };
   }
 
   if (action.type === CLEAR_VALUES) {
@@ -172,7 +180,7 @@ const reducer = (state, action) => {
       isLoading: false,
       jobs: action.payload.jobs,
       totalJobs: action.payload.totalJobs,
-      numOfPages: action.payload.numOfPages,
+      numOfJobPages: action.payload.numOfJobPages,
     };
   }
 
@@ -231,6 +239,33 @@ const reducer = (state, action) => {
       showAlert: true,
       alertType: "danger",
       alertText: action.payload.msg,
+    };
+  }
+
+  if (action.type === CLEAR_FILTERS) {
+    return {
+      ...state,
+      search: "",
+      searchStatus: "all",
+      searchType: "all",
+      sort: "latest",
+    };
+  }
+
+  if (action.type === CHANGE_JOB_PAGE) {
+    return { ...state, jobPage: action.payload.jobPage };
+  }
+
+  if (action.type === SHOW_STATS_BEGIN) {
+    return { ...state, isLoading: true, showAlert: false };
+  }
+
+  if (action.type === SHOW_STATS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      stats: action.payload.stats,
+      monthlyApplications: action.payload.monthlyApplications,
     };
   }
 

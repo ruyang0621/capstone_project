@@ -2,14 +2,27 @@ import { useEffect } from "react";
 import { useAppContext } from "../context/appContext";
 import { AddJobForm, Loading, Job } from "../components";
 import Wrapper from "../assets/wrappers/JobsContainer";
+import PageBtnContainer from "./PageBtnContainer";
 
 const JobsContainer = () => {
-  const { showAddJobForm, getJobs, jobs, isLoading, page, totalJobs } =
-    useAppContext();
+  const {
+    showAddJobForm,
+    getJobs,
+    jobs,
+    isLoading,
+    jobPage,
+    totalJobs,
+    search,
+    searchStatus,
+    searchType,
+    sort,
+    numOfJobPages,
+  } = useAppContext();
 
   useEffect(() => {
     getJobs();
-  }, []);
+    // eslint-disable-next-line
+  }, [jobPage, search, searchStatus, searchType, sort]);
 
   if (isLoading) {
     return <Loading center />;
@@ -31,6 +44,7 @@ const JobsContainer = () => {
           return <Job key={job._id} {...job} />;
         })}
       </div>
+      {numOfJobPages > 1 && <PageBtnContainer />}
     </Wrapper>
   );
 };

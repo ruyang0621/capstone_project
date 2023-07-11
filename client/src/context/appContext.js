@@ -14,7 +14,7 @@ import {
   UPDATE_USER_ERROR,
   SHOW_ADD_JOB_FORM,
   HIDE_ADD_JOB_FORM,
-  HANDLE_CHANGE,
+  HANDLE_JOB_CHANGE,
   CLEAR_VALUES,
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
@@ -27,6 +27,13 @@ import {
   EDIT_JOB_BEGIN,
   EDIT_JOB_SUCCESS,
   EDIT_JOB_ERROR,
+  CLEAR_FILTERS,
+  CHANGE_JOB_PAGE,
+  SHOW_STATS_BEGIN,
+  SHOW_STATS_SUCCESS,
+  CREATE_CONTACT_BEGIN,
+  CREATE_CONTACT_SUCCESS,
+  CREATE_CONTACT_ERROR,
 } from "./actions";
 
 const token = localStorage.getItem("token");
@@ -56,7 +63,22 @@ const initialState = {
   status: "applied",
   jobs: [],
   totalJobs: 0,
-  numOfPages: 1,
+  numOfJobPages: 1,
+  jobPage: 1,
+  search: "",
+  searchStatus: "all",
+  searchType: "all",
+  sort: "latest",
+  sortOptions: ["latest", "oldest", "a-z", "z-a"],
+  stats: {},
+  monthlyApplications: [],
+  contacts: [],
+  contactName: "",
+  contactLastName: "",
+  contactCompany: "",
+  contactEmail: "",
+  contactPhoneNum: "",
+  contactNote: "",
 };
 
 const AppContext = React.createContext();
@@ -177,9 +199,9 @@ const AppProvider = ({ children }) => {
     dispatch({ type: HIDE_ADD_JOB_FORM });
   };
 
-  const handleChange = ({ name, value }) => {
+  const handleJobChange = ({ name, value }) => {
     dispatch({
-      type: HANDLE_CHANGE,
+      type: HANDLE_JOB_CHANGE,
       payload: { name, value },
     });
   };
@@ -219,14 +241,18 @@ const AppProvider = ({ children }) => {
   };
 
   const getJobs = async () => {
-    let url = `jobs`;
+    const { search, searchStatus, searchType, sort, jobPage } = state;
+    let url = `/jobs?page=${jobPage}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`;
+    if (search) {
+      url = url + `&search=${search}`;
+    }
     dispatch({ type: GET_JOBS_BEGIN });
     try {
       const { data } = await authFetch(url);
-      const { jobs, totalJobs, numOfPages } = data;
+      const { jobs, totalJobs, numOfJobPages } = data;
       dispatch({
         type: GET_JOBS_SUCCESS,
-        payload: { jobs, totalJobs, numOfPages },
+        payload: { jobs, totalJobs, numOfJobPages },
       });
     } catch (error) {
       logoutUser();
@@ -284,6 +310,34 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  const clearFilters = () => {
+    dispatch({ type: CLEAR_FILTERS });
+  };
+
+  const changeJobPage = (jobPage) => {
+    dispatch({ type: CHANGE_JOB_PAGE, payload: { jobPage } });
+  };
+
+  const showStats = async () => {
+    dispatch({ type: SHOW_STATS_BEGIN });
+    try {
+      const { data } = await authFetch("/jobs/stats");
+      dispatch({
+        type: SHOW_STATS_SUCCESS,
+        payload: {
+          stats: data.defaultStats,
+          monthlyApplications: data.monthlyApplications,
+        },
+      });
+    } catch (error) {
+      logoutUser();
+    }
+  };
+
+  const createContact = async () => {
+    console.log("create contact");
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -295,7 +349,7 @@ const AppProvider = ({ children }) => {
         updateUser,
         showAddJobForm,
         hideAddJobForm,
-        handleChange,
+        handleJobChange,
         clearValues,
         createJob,
         getJobs,
@@ -303,6 +357,10 @@ const AppProvider = ({ children }) => {
         resetEditJobValue,
         editJob,
         deleteJob,
+        clearFilters,
+        changeJobPage,
+        showStats,
+        createContact,
       }}
     >
       {children}
