@@ -8,7 +8,12 @@ import {
   deleteContact,
 } from "../controllers/contactsController.js";
 
-router.route("/").post(createContact).get(getAllContacts);
-router.route("/:id").delete(deleteContact).patch(updateContact);
+import testUser from "../middleware/testUser.js";
+
+router.route("/").post(testUser, createContact).get(getAllContacts);
+router
+  .route("/:id")
+  .delete(testUser, deleteContact)
+  .patch(testUser, updateContact);
 
 export default router;

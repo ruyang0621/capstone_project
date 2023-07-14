@@ -14,7 +14,7 @@ const ContactSchema = new mongoose.Schema(
       type: String,
       maxlength: 60,
       trim: true,
-      default: "last name",
+      default: null,
     },
     company: {
       type: String,
@@ -23,21 +23,15 @@ const ContactSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      validate: {
-        validator: validator.isEmail,
-        message: "Please provide a valid email",
-      },
+      default: null,
     },
     phoneNumber: {
       type: String,
-      validate: {
-        validator: validator.isMobilePhone,
-        message: "Please provide a valid phone number",
-      },
+      default: null,
     },
     note: {
       type: String,
-      default: "",
+      default: null,
       maxlength: 500,
     },
     createdBy: {

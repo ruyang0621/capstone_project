@@ -47,15 +47,16 @@ const SearchJobContainer = () => {
 
   return (
     <Wrapper>
+      <h5 className="search-bar-title">Search Job</h5>
       <form className="form">
         <div className="form-center">
           <FormRow
             type="text"
-            name="search"
+            name="searchPosition"
+            labelText="position"
             value={localSearch}
             handleChange={optimizedDebounce}
           ></FormRow>
-          {/* rest of the inputs */}
           <FormRowSelect
             labelText="job status"
             name="searchStatus"

@@ -5,6 +5,12 @@ dotenv.config();
 import "express-async-errors";
 import morgan from "morgan";
 
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 import helmet from "helmet";
 import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
@@ -27,6 +33,9 @@ if (process.env.NODE_ENV !== "prudction") {
 }
 
 app.use(express.json());
+
+app.use(express.static(path.resolve(__dirname, "./client/build")));
+
 app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
@@ -38,6 +47,10 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", authenticateUser, jobRouter);
 app.use("/api/contacts", authenticateUser, contactRouter);
+
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

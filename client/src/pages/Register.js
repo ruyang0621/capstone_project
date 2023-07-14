@@ -52,7 +52,7 @@ const Register = () => {
     if (user) {
       setTimeout(() => {
         navigate("/");
-      }, 3000);
+      }, 1000);
     }
   }, [user, navigate]);
 
@@ -87,6 +87,20 @@ const Register = () => {
         />
         <button type="submit" className="btn btn-block" disabled={isLoading}>
           submit
+        </button>
+        <button
+          type="button"
+          className="btn btn-block btn-hipster"
+          disabled={isLoading}
+          onClick={() => {
+            setupUser({
+              currentUser: { email: "testUser@test.com", password: "secret" },
+              endPoint: "login",
+              alertText: "Login Successful! Redirecting...",
+            });
+          }}
+        >
+          {isLoading ? "loading..." : "demo user"}
         </button>
         <p>
           {values.isMember ? "Not a member yet?" : "Already a member?"}

@@ -42,7 +42,7 @@ const Wrapper = styled.section`
 
   @media (min-width: 1280px) {
     .form-center {
-      grid-template-columns: 3fr 1fr 1fr 1fr 1.5fr;
+      grid-template-columns: 1fr 1fr 0.5fr 0.5fr;
     }
   }
 `;

@@ -28,6 +28,23 @@ import {
   CHANGE_JOB_PAGE,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
+  SHOW_ADD_CONTACT_FORM,
+  HIDE_ADD_CONTACT_FORM,
+  HANDLE_CONTACT_CHANGE,
+  CLEAR_CONTACT_VALUES,
+  CREATE_CONTACT_BEGIN,
+  CREATE_CONTACT_ERROR,
+  CREATE_CONTACT_SUCCESS,
+  GET_CONTACTS_BEGIN,
+  GET_CONTACTS_SUCCESS,
+  SET_EDIT_CONTACT,
+  RESET_EDIT_CONTACT,
+  EDIT_CONTACT_BEGIN,
+  EDIT_CONTACT_SUCCESS,
+  EDIT_CONTACT_ERROR,
+  DELETE_CONTACT_BEGIN,
+  CLEAR_CONTACT_FILTERS,
+  CHANGE_CONTACT_PAGE,
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -37,7 +54,7 @@ const reducer = (state, action) => {
       ...state,
       showAlert: true,
       alertType: "danger",
-      alertText: "Please provide all values!",
+      alertText: action.payload.alertText || "Please provide all values!",
     };
   }
   if (action.type === CLEAR_ALERT) {
@@ -245,7 +262,7 @@ const reducer = (state, action) => {
   if (action.type === CLEAR_FILTERS) {
     return {
       ...state,
-      search: "",
+      searchPosition: "",
       searchStatus: "all",
       searchType: "all",
       sort: "latest",
@@ -267,6 +284,151 @@ const reducer = (state, action) => {
       stats: action.payload.stats,
       monthlyApplications: action.payload.monthlyApplications,
     };
+  }
+
+  if (action.type === CREATE_CONTACT_BEGIN) {
+    return { ...state, isLoadingEdit: true };
+  }
+
+  if (action.type === CREATE_CONTACT_SUCCESS) {
+    return {
+      ...state,
+      isLoadingEdit: false,
+      showAlert: true,
+      alertType: "success",
+      alertText: "New Contact Created!",
+    };
+  }
+
+  if (action.type === CREATE_CONTACT_ERROR) {
+    return {
+      ...state,
+      isLoadingEdit: false,
+      showAlert: true,
+      alertType: "danger",
+      alertText: action.payload.msg,
+    };
+  }
+
+  if (action.type === SHOW_ADD_CONTACT_FORM) {
+    return { ...state, displayAddContactForm: true };
+  }
+
+  if (action.type === HIDE_ADD_CONTACT_FORM) {
+    return { ...state, displayAddContactForm: false };
+  }
+
+  if (action.type === CLEAR_CONTACT_VALUES) {
+    const initialState = {
+      isEditing: false,
+      editContactId: "",
+      contactName: "",
+      contactLastName: "",
+      contactCompany: "",
+      contactEmail: "",
+      contactPhoneNum: "",
+      contactNote: "",
+    };
+    return { ...state, ...initialState };
+  }
+
+  if (action.type === HANDLE_CONTACT_CHANGE) {
+    return {
+      ...state,
+      contactPage: 1,
+      [action.payload.name]: action.payload.value,
+    };
+  }
+
+  if (action.type === GET_CONTACTS_BEGIN) {
+    return { ...state, isLoading: true, showAlert: false };
+  }
+
+  if (action.type === GET_CONTACTS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      contacts: action.payload.contacts,
+      totalContacts: action.payload.totalContacts,
+      numOfContactPages: action.payload.numOfContactPages,
+    };
+  }
+
+  if (action.type === SET_EDIT_CONTACT) {
+    const contact = state.contacts.find(
+      (contact) => contact._id === action.payload.id
+    );
+    const { _id, name, lastName, company, note } = contact;
+    return {
+      ...state,
+      isEditing: true,
+      editContactId: _id,
+      contactName: name,
+      contactLastName: lastName,
+      contactCompany: company,
+      contactEmail: contact.email === "Email" ? "" : contact.email,
+      contactPhoneNum:
+        contact.phoneNumber === "Phone Number" ? "" : contact.phoneNumber,
+      contactNote: note,
+    };
+  }
+
+  if (action.type === RESET_EDIT_CONTACT) {
+    const contact = state.contacts.find(
+      (contact) => contact._id === action.payload.editContactId
+    );
+    const { name, lastName, company, note } = contact;
+    return {
+      ...state,
+      contactName: name,
+      contactLastName: lastName,
+      contactCompany: company,
+      contactEmail: contact.email === "Email" ? "" : contact.email,
+      contactPhoneNum:
+        contact.phoneNumber === "Phone Number" ? "" : contact.phoneNumber,
+      contactNote: note,
+    };
+  }
+
+  if (action.type === EDIT_CONTACT_BEGIN) {
+    return { ...state, isLoadingEdit: true };
+  }
+
+  if (action.type === EDIT_CONTACT_SUCCESS) {
+    return {
+      ...state,
+      isLoadingEdit: false,
+      showAlert: true,
+      alertType: "success",
+      alertText: "Contact Updated!",
+    };
+  }
+
+  if (action.type === EDIT_CONTACT_ERROR) {
+    return {
+      ...state,
+      isLoadingEdit: false,
+      showAlert: true,
+      alertType: "danger",
+      alertText: action.payload.msg,
+    };
+  }
+
+  if (action.type === DELETE_CONTACT_BEGIN) {
+    return { ...state, isLoading: true };
+  }
+
+  if (action.type === CLEAR_CONTACT_FILTERS) {
+    return {
+      ...state,
+      searchName: "",
+      searchCompany: "",
+      contactSort: "latest",
+    };
+  }
+
+  if (action.type === CHANGE_CONTACT_PAGE) {
+    return { ...state, contactPage: action.payload.contactPage };
   }
 
   throw new Error(`no such action: ${action.type}`);

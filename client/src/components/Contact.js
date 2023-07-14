@@ -1,50 +1,56 @@
 import moment from "moment";
 import { useAppContext } from "../context/appContext";
-import Wrapper from "../assets/wrappers/Job";
-import { InfoCard, Note } from "../components";
-import { FaMapLocationDot, FaCalendarDays, FaDiceD6 } from "react-icons/fa6";
+import Wrapper from "../assets/wrappers/Contact";
+import { Note, InfoCard } from "../components";
+import { FaCalendarDays, FaPhone, FaEnvelope } from "react-icons/fa6";
 
-const Job = ({
+const Contact = ({
   _id,
-  position,
+  name,
+  lastName,
   company,
+  email,
+  phoneNumber,
   note,
-  jobLocation,
-  jobType,
   createdAt,
-  status,
 }) => {
-  const { setEditJob, deleteJob } = useAppContext();
-
+  const { setEditContact, deleteContact } = useAppContext();
   let date = moment(createdAt);
   date = date.format("MMM Do, YYYY");
   return (
     <Wrapper>
       <header className="info">
         <div>
-          <h5>{position}</h5>
+          <h5>
+            {name} {lastName === null ? "" : lastName}
+          </h5>
           <p>{company}</p>
         </div>
       </header>
       <div className="content">
-        <InfoCard icon={<FaMapLocationDot />} text={jobLocation} />
+        <InfoCard
+          icon={<FaEnvelope />}
+          text={email === null ? "Email" : email}
+        />
+        <InfoCard
+          icon={<FaPhone />}
+          text={phoneNumber === null ? "Phone Number" : phoneNumber}
+        />
         <InfoCard icon={<FaCalendarDays />} text={date} />
-        <InfoCard icon={<FaDiceD6 />} text={jobType} />
-        <div className={`status ${status}`}>{status}</div>
       </div>
       <Note note={note} />
       <footer className="btn-group">
         <button
           type="button"
           className="btn edit-btn"
-          onClick={() => setEditJob(_id)}
+          onClick={() => setEditContact(_id)}
         >
           Edit
         </button>
         <button
           type="button"
           className="btn delete-btn"
-          onClick={() => deleteJob(_id)}
+          onClick={() => deleteContact(_id)}
         >
           Delete
         </button>
@@ -52,4 +58,4 @@ const Job = ({
     </Wrapper>
   );
 };
-export default Job;
+export default Contact;

@@ -34,6 +34,20 @@ import {
   CREATE_CONTACT_BEGIN,
   CREATE_CONTACT_SUCCESS,
   CREATE_CONTACT_ERROR,
+  SHOW_ADD_CONTACT_FORM,
+  HIDE_ADD_CONTACT_FORM,
+  HANDLE_CONTACT_CHANGE,
+  CLEAR_CONTACT_VALUES,
+  GET_CONTACTS_BEGIN,
+  GET_CONTACTS_SUCCESS,
+  SET_EDIT_CONTACT,
+  RESET_EDIT_CONTACT,
+  EDIT_CONTACT_BEGIN,
+  EDIT_CONTACT_SUCCESS,
+  EDIT_CONTACT_ERROR,
+  DELETE_CONTACT_BEGIN,
+  CLEAR_CONTACT_FILTERS,
+  CHANGE_CONTACT_PAGE,
 } from "./actions";
 
 const token = localStorage.getItem("token");
@@ -65,20 +79,28 @@ const initialState = {
   totalJobs: 0,
   numOfJobPages: 1,
   jobPage: 1,
-  search: "",
+  searchPosition: "",
   searchStatus: "all",
   searchType: "all",
   sort: "latest",
   sortOptions: ["latest", "oldest", "a-z", "z-a"],
   stats: {},
   monthlyApplications: [],
-  contacts: [],
   contactName: "",
   contactLastName: "",
   contactCompany: "",
   contactEmail: "",
   contactPhoneNum: "",
   contactNote: "",
+  editContactId: "",
+  contacts: [],
+  totalContacts: 0,
+  numOfContactPages: 1,
+  contactPage: 1,
+  displayAddContactForm: false,
+  searchName: "",
+  searchCompany: "",
+  contactSort: "latest",
 };
 
 const AppContext = React.createContext();
@@ -112,15 +134,15 @@ const AppProvider = ({ children }) => {
     }
   );
 
-  const displayAlert = () => {
-    dispatch({ type: DISPLAY_ALERT });
+  const displayAlert = (alertMsg) => {
+    dispatch({ type: DISPLAY_ALERT, payload: { alertText: alertMsg } });
     clearAlert();
   };
 
   const clearAlert = () => {
     setTimeout(() => {
       dispatch({ type: CLEAR_ALERT });
-    }, 3000);
+    }, 1000);
   };
 
   const addUserToLocalStorage = ({ user, token, location }) => {
@@ -241,10 +263,10 @@ const AppProvider = ({ children }) => {
   };
 
   const getJobs = async () => {
-    const { search, searchStatus, searchType, sort, jobPage } = state;
+    const { searchPosition, searchStatus, searchType, sort, jobPage } = state;
     let url = `/jobs?page=${jobPage}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`;
-    if (search) {
-      url = url + `&search=${search}`;
+    if (searchPosition) {
+      url = url + `&search=${searchPosition}`;
     }
     dispatch({ type: GET_JOBS_BEGIN });
     try {
@@ -335,7 +357,147 @@ const AppProvider = ({ children }) => {
   };
 
   const createContact = async () => {
-    console.log("create contact");
+    dispatch({ type: CREATE_CONTACT_BEGIN });
+    const newContact = {
+      name: state.contactName,
+      company: state.contactCompany,
+      note: state.contactNote,
+    };
+    if (state.contactLastName !== "") {
+      newContact.lastName = state.contactLastName;
+    }
+    if (state.contactEmail !== "") {
+      newContact.email = state.contactEmail;
+    }
+    if (state.contactPhoneNum !== "") {
+      newContact.phoneNumber = state.contactPhoneNum;
+    }
+    try {
+      await authFetch.post("./contacts", newContact);
+      dispatch({
+        type: CREATE_CONTACT_SUCCESS,
+      });
+      dispatch({ type: CLEAR_CONTACT_VALUES });
+      setTimeout(() => {
+        hideAddContactForm();
+        getContacts();
+      }, 800);
+    } catch (error) {
+      if (error.response.status === 401) return;
+      dispatch({
+        type: CREATE_CONTACT_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+    clearAlert();
+  };
+
+  const showAddContactForm = () => {
+    dispatch({ type: SHOW_ADD_CONTACT_FORM });
+  };
+
+  const hideAddContactForm = () => {
+    dispatch({ type: HIDE_ADD_CONTACT_FORM });
+  };
+
+  const clearContactValues = () => {
+    dispatch({ type: CLEAR_CONTACT_VALUES });
+  };
+
+  const handleContactChange = ({ name, value }) => {
+    console.log(name, value);
+    dispatch({
+      type: HANDLE_CONTACT_CHANGE,
+      payload: { name, value },
+    });
+  };
+
+  const getContacts = async () => {
+    const { contactPage, searchName, searchCompany, contactSort } = state;
+
+    let url = `/contacts?page=${contactPage}&sort=${contactSort}`;
+    if (searchName) {
+      url = url + `&name=${searchName}`;
+    }
+    if (searchCompany) {
+      url = url + `&company=${searchCompany}`;
+    }
+    dispatch({ type: GET_CONTACTS_BEGIN });
+    try {
+      const { data } = await authFetch(url);
+      const { contacts, totalContacts, numOfContactPages } = data;
+      dispatch({
+        type: GET_CONTACTS_SUCCESS,
+        payload: { contacts, totalContacts, numOfContactPages },
+      });
+    } catch (error) {
+      logoutUser();
+    }
+    clearAlert();
+  };
+
+  const setEditContact = (id) => {
+    dispatch({ type: SET_EDIT_CONTACT, payload: { id } });
+    showAddContactForm();
+  };
+
+  const resetEditContactValue = () => {
+    const { editContactId } = state;
+    dispatch({ type: RESET_EDIT_CONTACT, payload: { editContactId } });
+  };
+
+  const editContact = async () => {
+    dispatch({ type: EDIT_CONTACT_BEGIN });
+    const newContact = {
+      name: state.contactName,
+      company: state.contactCompany,
+      note: state.contactNote,
+    };
+    if (state.contactLastName !== "") {
+      newContact.lastName = state.contactLastName;
+    }
+    if (state.contactEmail !== "") {
+      newContact.email = state.contactEmail;
+    }
+    if (state.contactPhoneNum !== "") {
+      newContact.phoneNumber = state.contactPhoneNum;
+    }
+    try {
+      await authFetch.patch(`./contacts/${state.editContactId}`, newContact);
+      dispatch({
+        type: EDIT_CONTACT_SUCCESS,
+      });
+      setTimeout(() => {
+        hideAddContactForm();
+        clearContactValues();
+        getContacts();
+      }, 800);
+    } catch (error) {
+      if (error.response.status === 401) return;
+      dispatch({
+        type: EDIT_CONTACT_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+    clearAlert();
+  };
+
+  const deleteContact = async (contactId) => {
+    dispatch({ type: DELETE_CONTACT_BEGIN });
+    try {
+      await authFetch.delete(`/contacts/${contactId}`);
+      getContacts();
+    } catch (error) {
+      logoutUser();
+    }
+  };
+
+  const clearContactFilters = () => {
+    dispatch({ type: CLEAR_CONTACT_FILTERS });
+  };
+
+  const changeContactPage = (contactPage) => {
+    dispatch({ type: CHANGE_CONTACT_PAGE, payload: { contactPage } });
   };
 
   return (
@@ -361,6 +523,17 @@ const AppProvider = ({ children }) => {
         changeJobPage,
         showStats,
         createContact,
+        showAddContactForm,
+        hideAddContactForm,
+        clearContactValues,
+        handleContactChange,
+        getContacts,
+        setEditContact,
+        resetEditContactValue,
+        editContact,
+        deleteContact,
+        clearContactFilters,
+        changeContactPage,
       }}
     >
       {children}

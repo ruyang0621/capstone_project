@@ -17,6 +17,22 @@ const Wrapper = styled.section`
     opacity: 1;
   }
 
+  .add-contact-container {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -1;
+  }
+
+  .show-add-contact-form {
+    z-index: 99;
+    opacity: 1;
+  }
+
   .form-container {
     width: 90vw;
     max-width: 500px;
