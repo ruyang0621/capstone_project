@@ -12,7 +12,6 @@ import path from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import helmet from "helmet";
-import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
 
 // DB
@@ -37,7 +36,6 @@ app.use(express.json());
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 app.use(helmet());
-app.use(xss());
 app.use(mongoSanitize());
 
 app.get("/api", (req, res) => {

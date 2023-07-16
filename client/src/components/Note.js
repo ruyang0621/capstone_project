@@ -5,7 +5,7 @@ const Note = ({ note }) => {
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore);
   };
-  if (note === null) {
+  if (note === "") {
     return <p className="note-detail">Note: waiting to be added...</p>;
   }
 

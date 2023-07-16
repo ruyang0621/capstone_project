@@ -38,7 +38,7 @@ const Contact = ({
         />
         <InfoCard icon={<FaCalendarDays />} text={date} />
       </div>
-      <Note note={note} />
+      <Note note={note === null ? "" : note} />
       <footer className="btn-group">
         <button
           type="button"
